@@ -30,6 +30,44 @@ public struct StatsDPacket: Sendable {
         )
     }
 
+    /// Gauge (`g`). Sets the running gauge to `value`.
+    public mutating func gauge(
+        _ name: String, value: Double,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        try appendLine(
+            name: name,
+            valueString: Encoding.formatDouble(value),
+            type: "g",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
+    /// Gauge delta (`+5|g` / `-5|g`). Adjusts the running gauge by `delta`.
+    /// To *set* the gauge, use ``gauge(_:value:sampleRate:tags:)``.
+    public mutating func gaugeDelta(
+        _ name: String, delta: Double,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        let formatted: String = Encoding.formatDouble(delta)
+        let signed: String
+        if delta < 0 || formatted.hasPrefix("-") {
+            signed = formatted
+        } else {
+            signed = "+" + formatted
+        }
+        try appendLine(
+            name: name,
+            valueString: signed,
+            type: "g",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
     /// Append a single metric line. Validates name, sample rate, dialect/tag
     /// compatibility, and individual tag entries.
     private mutating func appendLine(
