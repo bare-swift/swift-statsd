@@ -99,6 +99,44 @@ public struct StatsDPacket: Sendable {
         )
     }
 
+    /// Histogram (`h`) — DogStatsD only. Throws ``StatsDError/histogramNotSupportedInEtsyDialect``
+    /// when `dialect == .etsy`.
+    public mutating func histogram(
+        _ name: String, value: Double,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        if dialect == .etsy {
+            throw .histogramNotSupportedInEtsyDialect
+        }
+        try appendLine(
+            name: name,
+            valueString: Encoding.formatDouble(value),
+            type: "h",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
+    /// Distribution (`d`) — DogStatsD only. Throws ``StatsDError/distributionNotSupportedInEtsyDialect``
+    /// when `dialect == .etsy`.
+    public mutating func distribution(
+        _ name: String, value: Double,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        if dialect == .etsy {
+            throw .distributionNotSupportedInEtsyDialect
+        }
+        try appendLine(
+            name: name,
+            valueString: Encoding.formatDouble(value),
+            type: "d",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
     /// Append a single metric line. Validates name, sample rate, dialect/tag
     /// compatibility, and individual tag entries.
     private mutating func appendLine(
