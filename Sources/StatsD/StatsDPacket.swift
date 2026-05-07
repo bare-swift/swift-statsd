@@ -4,7 +4,7 @@
 import Bytes
 
 /// Sendable, value-typed StatsD packet builder. Per-metric methods append
-/// `\n`-separated lines into an internal ``Bytes`` buffer; ``finish()``
+/// `\n`-separated lines into an internal `Bytes` buffer; ``finish()``
 /// is `consuming` and returns the UDP datagram payload.
 public struct StatsDPacket: Sendable {
     public let dialect: StatsD.Dialect
