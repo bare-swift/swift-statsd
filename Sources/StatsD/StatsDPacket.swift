@@ -68,6 +68,37 @@ public struct StatsDPacket: Sendable {
         )
     }
 
+    /// Timer (`ms`). Records a duration in milliseconds.
+    public mutating func timer(
+        _ name: String, milliseconds: Double,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        try appendLine(
+            name: name,
+            valueString: Encoding.formatDouble(milliseconds),
+            type: "ms",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
+    /// Set (`s`). Records an addition to a set of unique values; the
+    /// receiving aggregator computes set cardinality.
+    public mutating func set(
+        _ name: String, member: String,
+        sampleRate: Double? = nil,
+        tags: [String: String] = [:]
+    ) throws(StatsDError) {
+        try appendLine(
+            name: name,
+            valueString: member,
+            type: "s",
+            sampleRate: sampleRate,
+            tags: tags
+        )
+    }
+
     /// Append a single metric line. Validates name, sample rate, dialect/tag
     /// compatibility, and individual tag entries.
     private mutating func appendLine(
